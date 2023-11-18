@@ -34,5 +34,4 @@ class WeatherMatrixBuilder:
 
         z_t = t_interpolator(self.x1, self.y1)
         z_u = u_interpolator(self.x1, self.y1)
-        with open(f"days_log/{time}.json", 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        np.save(f"days_log/{time}.npy", np.array([z_t, z_u]))
