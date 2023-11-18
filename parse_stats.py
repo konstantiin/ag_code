@@ -8,7 +8,8 @@ import pandas as pd
 
 def parse_csv(file):
     df = pd.read_csv(file, sep = ';', comment = '#', index_col=False)
-
+    index = df.iloc[:, 0]
+    df = df.set_index(df.columns[0])
     res = df.transpose().to_dict()
     return res
 
@@ -45,7 +46,7 @@ def parse_weather(start, finish):#dd.mm.yyyy
             dt = [key, id] + stations[id] + [data[key]]
 
 
-            with open(f"days_log_raw/{id}--{key}.json", "w+", encoding='utf-8') as f:
+            with open(f"days_log_raw/{id}--{key.replace(' ', '_').replace('.', '_').replace(':', '_')}.json", "w+", encoding='utf-8') as f:
                 json.dump(dt, f, ensure_ascii=False)
 
 if  __name__ == "__main__":
