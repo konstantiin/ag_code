@@ -5,6 +5,7 @@
 import json
 import wget
 import pandas as pd
+import datetime
 
 def parse_csv(file):
     df = pd.read_csv(file, sep = ';', comment = '#', index_col=False)
@@ -46,8 +47,16 @@ def parse_weather(start, finish):#dd.mm.yyyy
             dt = [key, id] + stations[id] + [data[key]]
 
 
-            with open(f"days_log_raw/{id}--{key.replace(' ', '_').replace('.', '_').replace(':', '_')}.json", "w+", encoding='utf-8') as f:
+            with open(f"days_log_raw/{id}--{int(parse_date_to_timestamp(key))}.json", "w+", encoding='utf-8') as f:
                 json.dump(dt, f, ensure_ascii=False)
+
+
+#dd_mm_yyyy_tt_tt
+def parse_date_to_timestamp(time_str):
+    time_str = time_str.replace(' ', '_').replace('.', '_').replace(':', '_')
+    tm = list( time_str.split('_'))
+    dt = datetime.datetime.fromisoformat(f"{tm[2]}{tm[1]}{tm[0]}T{tm[3]}0000")
+    return dt.timestamp()
 
 if  __name__ == "__main__":
     parse_weather("01.04.2021", "01.05.2021")

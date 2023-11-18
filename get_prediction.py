@@ -7,6 +7,8 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 import tqdm
+import datetime
+
 cfg = {}
 eps = 3
 samples_per_day = 8
@@ -16,7 +18,6 @@ with open("illness_info.json", encoding="utf8") as f:
 
 grad_coord_x = {}
 grad_coord_y = {}
-
 
 
 
@@ -84,7 +85,7 @@ def construct_dic(x, y, name):
 def save_to_json(name, ans):
     
     json_res = []
-    for ill, mat in map(illnesses.keys(), ans):
+    for ill, mat in zip(illnesses.keys(), ans):
         json_res += np.apply_along_axis(lambda x, y: {"x": grad_coord_x[x], "y": grad_coord_y[y], "name": ill},  1,  np.asarray(mat.nonzero()).T).tolist()
 
     with open(name, "w+") as f:
@@ -95,7 +96,7 @@ def save_to_json(name, ans):
 
 #data format: dd.mm.yyyy_tt:tt
 def get_matrix_paths(date_time):
-     return []
+     
 
 
 
