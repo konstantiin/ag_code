@@ -23,7 +23,11 @@ grad_coord_y = {}
 
 
 
-
+def parse_date_to_timestamp(time_str):
+    time_str = time_str.replace(' ', '_').replace('.', '_').replace(':', '_')
+    tm = list( time_str.split('_'))
+    dt = datetime.datetime.fromisoformat(f"{tm[2]}{tm[1]}{tm[0]}T{tm[3]}0000")
+    return dt.timestamp()
 
 def unpack_matrix(file):#жсон
     with open(file) as f:
@@ -96,6 +100,14 @@ def save_to_json(name, ans):
 
 #data format: dd.mm.yyyy_tt:tt
 def get_matrix_paths(date_time):
+    step = 10800
+    cur = parse_date_to_timestamp(date_time)
+    mats = []
+    for t in range(cur, 0,10800):
+        mats.append(f"days_log/{t}.json")
+        if (len(mats) == 25):
+            break
+    return mats
      
 
 
