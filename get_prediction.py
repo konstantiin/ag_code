@@ -3,11 +3,13 @@
 По сути матрицу вероятностей размером width * height * (количество заболеваний), где параметры width и height определены в cfg.json. 
 '''
 import sys
+import os
 import json
 import numpy as np
 import matplotlib.pyplot as plt
 import tqdm
 import datetime
+import WeatherMatrixBuilder
 
 cfg = {}
 eps = 3
@@ -99,12 +101,12 @@ def save_to_json(name, ans):
 
 
 #data format: dd.mm.yyyy_tt:tt
-def get_matrix_paths(date_time):
+def get_matrix_ts(date_time):
     step = 10800
-    cur = parse_date_to_timestamp(date_time)
+    cur = int(parse_date_to_timestamp(date_time))
     mats = []
     for t in range(cur, 0,10800):
-        mats.append(f"days_log/{t}.json")
+        mats.append(f"{t}")
         if (len(mats) == 25):
             break
     return mats
@@ -114,18 +116,24 @@ def get_matrix_paths(date_time):
 
 
 if __name__ == "__main__":
-
-    grad_coord_x = get_grad_coord_x()
-    grad_coord_y = get_grad_coord_y()
+    builder = WeatherMatrixBuilder.WeatherMatrixBuilder()
+    grad_coord_x = builder.x1
+    grad_coord_y = builder.y1
 
 
     with open("cfg.json") as f:
         cfg = json.load(f)
     predict_time = sys.argv[1]
-    paths = get_matrix_paths(predict_time)
+    ts = get_matrix_ts(predict_time)
+    paths = []
+    for t in ts:
+        paths.append("days_log/{t}.json")
+        if (os.path.exists("days_log/{t}.json")):
+            continue
+
+        builder.produce(t, data="days_log_raw")
     ans = get_probability(paths) 
     save_path = f"zalupa_{predict_time}.json"
     save_to_json(save_path, ans)
     exit(0)
     
-
