@@ -50,5 +50,3 @@ def parse_weather(start, finish):#dd.mm.yyyy
 
 if  __name__ == "__main__":
     parse_weather("01.04.2021", "01.05.2021")
-
-
