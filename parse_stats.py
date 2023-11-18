@@ -59,4 +59,4 @@ def parse_date_to_timestamp(time_str):
     return dt.timestamp()
 
 if  __name__ == "__main__":
-    parse_weather("01.04.2021", "01.05.2021")
+    parse_weather("01.01.2021", "31.12.2021")

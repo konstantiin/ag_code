@@ -32,8 +32,7 @@ def parse_date_to_timestamp(time_str):
     return dt.timestamp()
 
 def unpack_matrix(file):#жсон
-    with open(file) as f:
-        data = np.asarray(json.load(f))
+    data = np.load(file)
     return data
 class IllnessMeter:
     def __init__(self, lowest_temp, highest_temp, 
@@ -45,6 +44,8 @@ class IllnessMeter:
         self.period = per * 8# количество измерений в день
         self.count = np.zeros((cfg["height"], cfg["width"]), dtype = int)
     def step(self, matrix):
+
+        matrix = np.moveaxis(matrix, 0, -1)
         mat0 = matrix[:, :, 0]
         mat1 = matrix[:, :, 1]
         m0 = np.where(mat0 <= self.ht + eps, True, False)
@@ -92,10 +93,13 @@ def save_to_json(name, ans):
     
     json_res = []
     for ill, mat in zip(illnesses.keys(), ans):
-        json_res += np.apply_along_axis(lambda x, y: {"x": grad_coord_x[x], "y": grad_coord_y[y], "name": ill},  1,  np.asarray(mat.nonzero()).T).tolist()
+        bad = np.asarray(mat.nonzero()).T
+        if (bad.shape[0] == 0):
+            continue
+        json_res += np.apply_along_axis(lambda x, y: {"x": grad_coord_x[x], "y": grad_coord_y[y], "name": ill},  1,  bad).tolist()
 
     with open(name, "w+") as f:
-        json.dump(json_res)
+        json.dump(json_res, f)
 
     
 
@@ -105,7 +109,7 @@ def get_matrix_ts(date_time):
     step = 10800
     cur = int(parse_date_to_timestamp(date_time))
     mats = []
-    for t in range(cur, 0,10800):
+    for t in range(cur, 0,-10800):
         mats.append(f"{t}")
         if (len(mats) == 25):
             break
@@ -126,9 +130,9 @@ if __name__ == "__main__":
     predict_time = sys.argv[1]
     ts = get_matrix_ts(predict_time)
     paths = []
-    for t in ts:
-        paths.append("days_log/{t}.json")
-        if (os.path.exists("days_log/{t}.json")):
+    for t in tqdm.tqdm(ts):
+        paths.append(f"days_log/{t}.npy")
+        if (os.path.exists(f"days_log/{t}.npy")):
             continue
 
         builder.produce(t, data="days_log_raw")
