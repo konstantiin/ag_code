@@ -1,4 +1,6 @@
 {
     "width": 4096,
-    "height": 4096
+    "height": 4096,
+    "eps_t": 0,
+    "eps_u": 0
 }

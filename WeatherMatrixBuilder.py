@@ -16,9 +16,9 @@ class WeatherMatrixBuilder:
                 self.latitudes.append(s[i][1])
                 self.longitudes.append(s[i][2])
                 self.heights.append(s[i][3])
-            gr1 = np.linspace(min(self.latitudes) - 0.3, max(self.latitudes) + 0.3, num=4096)
-            gr2 = np.linspace(min(self.longitudes) - 0.3, max(self.longitudes) + 0.3, num=4096)
-            self.x1, self.y1 = np.meshgrid(gr1, gr2)
+            self.gr1 = np.linspace(min(self.latitudes) - 0.3, max(self.latitudes) + 0.3, num=4096)
+            self.gr2 = np.linspace(min(self.longitudes) - 0.3, max(self.longitudes) + 0.3, num=4096)
+            self.x1, self.y1 = np.meshgrid(self.gr1, self.gr2)
 
     def produce(self, time, data="new_data"):
         t = []
