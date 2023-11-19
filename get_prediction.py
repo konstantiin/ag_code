@@ -113,7 +113,7 @@ def construct_dic(x, y, name):
 
 def delete_half(mat):
     mask = np.full(mat.shape,False, dtype = bool)
-    mask[0:mat.shape[0]:10, 0:mat.shape[1]:10] = True
+    mask[0:mat.shape[0]:15, 0:mat.shape[1]:15] = True
     mat = np.logical_and(mat, mask)
 
     return mat
