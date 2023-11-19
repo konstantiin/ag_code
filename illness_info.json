@@ -1,0 +1,98 @@
+{
+    "Милдью или ложная мучнистая роса":
+    {
+        "temperature_lb": 21,
+        "temperature_ub": 25,
+        "wetness_lb": 85,
+        "wetness_ub": 100,
+        "period": 2
+    },
+    "Оидиум":
+    {
+        "temperature_lb": 20,
+        "temperature_ub": 35,
+        "wetness_lb": 60,
+        "wetness_ub": 80,
+        "period": 2
+    },
+    "Антракноз":
+    {
+        "temperature_lb": 24,
+        "temperature_ub": 30,
+        "wetness_lb":70,
+        "wetness_ub":80,
+        "period": 2
+    },
+    "Серая гниль":
+    {
+        "temperature_lb":16,
+        "temperature_ub":26,
+        "wetness_lb":95,
+        "wetness_ub":100,
+        "period": 2
+    }, 
+    "Чёрная пятнистость":
+    {
+        "temperature_lb": 18 ,
+        "temperature_ub": 20,
+        "wetness_lb":80,
+        "wetness_ub":90,
+        "period": 2
+    },
+    "Чёрная гниль":
+    {
+        "temperature_lb": 20,
+        "temperature_ub":25,
+        "wetness_lb": 85,
+        "wetness_ub":100,
+        "period": 2
+    }, 
+    "Белая гниль":
+    {
+        "temperature_lb": 20,
+        "temperature_ub": 27,
+        "wetness_lb": 90,
+        "wetness_ub": 100,
+        "period": 2
+    },
+    "Вертициллезное увядание":
+    {
+        "temperature_lb": 21,
+        "temperature_ub": 24,
+        "wetness_lb":50,
+        "wetness_ub":60,
+        "period": 2
+    },  
+    "Альтернариоз":
+    {
+        "temperature_lb": 23,
+        "temperature_ub":25,
+        "wetness_lb":80,
+        "wetness_ub":90,
+        "period": 2
+    }, 
+    "Фузариоз":
+    {
+        "temperature_lb": 13,
+        "temperature_ub": 20,
+        "wetness_lb":80,
+        "wetness_ub":90,
+        "period": 2
+    },
+    "Краснуха":
+    {
+        "temperature_lb": 18,
+        "temperature_ub":20,
+        "wetness_lb": 90,
+        "wetness_ub":100,
+        "period": 2
+    },
+    "Бактериальный рак":
+    {
+        "temperature_lb": 25,
+        "temperature_ub": 30,
+        "wetness_lb": 95,
+        "wetness_ub":95,
+        "period": 2
+    }
+}
