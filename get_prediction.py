@@ -32,6 +32,7 @@ def parse_date_to_timestamp(time_str):
     return dt.timestamp()
 
 def unpack_matrix(file):#жсон
+
     data = np.load(file)
     return data
 class IllnessMeter:
@@ -42,22 +43,36 @@ class IllnessMeter:
         self.lw = lowest_wetness
         self.hw = highest_wetness
         self.period = per * 8# количество измерений в день
+        self.period = 0
         self.count = np.zeros((cfg["height"], cfg["width"]), dtype = int)
+        self.cm = 0
     def step(self, matrix):
-
+        self.cm+=1
+        
         matrix = np.moveaxis(matrix, 0, -1)
         mat0 = matrix[:, :, 0]
         mat1 = matrix[:, :, 1]
-        m0 = np.where(mat0 <= self.ht + eps, True, False)
-        m0 = np.logical_and(m0, np.where(mat0 >= self.lt - eps, True, False))
+        #print(mat0[1023][1700: 1710])
+        m0 = mat0 <= (self.ht + eps)
+        #print(m0[1023][1700: 1710])
+        #print(self.lt-eps)
+        m0 = np.logical_and(m0, mat0 >= (self.lt-eps))
+        #tmp = mat0 >= (self.lt-eps)
 
-        m1 = np.where(mat1 <= self.ht + eps, True, False)
-        m1 = np.logical_and(m1, np.where(mat1 >= self.lt - eps, True, False))
-        mask = m0 == m1 
-        mask = mask == m0
+        
+        m1 = mat1 <= self.hw
+        m1 = np.logical_and(m1, mat1 >= (self.lw-eps))
+        
+        mask = np.logical_and(m1, m0)
+        
+        #print(mask[1023][1700: 1710])
         self.count[mask] += 1
+        #print(np.max(self.count))
+        #exit(0)
     def get_result(self):
-        return np.where(self.count >= self.period - eps, 1, 0)
+        #print(np.max(self.count), self.period - eps)
+        #print(self.cm)
+        return self.count >= (self.period - eps)
 
 def get_meters(illness_info):
     res = []
@@ -74,11 +89,17 @@ def get_meters(illness_info):
 def get_probability(mat_paths):
     
     meters = get_meters(illnesses)
-    for path in tqdm.tqdm(mat_paths):# iterate over test_samples
+    cnt = 0
+    c =0 
+    for path in tqdm.tqdm(mat_paths[:1]):# iterate over test_samples
+        if not os.path.exists(path):
+            cnt += 1
+            continue
         mat = unpack_matrix(path)
-        [m.step(mat) for m in meters]
-    
-    
+        c+=1
+        for m in meters:
+            m.step(mat)
+        
     return [m.get_result() for m in meters]
 
 
@@ -89,15 +110,19 @@ def get_probability(mat_paths):
 def construct_dic(x, y, name):
     return {"x": grad_coord_x[x], "y": grad_coord_y[y], "name": name}
 
+
 def save_to_json(name, ans):
     
     json_res = []
-    for ill, mat in zip(illnesses.keys(), ans):
+    print(grad_coord_x.shape)
+    for ill, mat in tqdm.tqdm(zip(illnesses.keys(), ans)):
         bad = np.asarray(mat.nonzero()).T
         if (bad.shape[0] == 0):
             continue
-        json_res += np.apply_along_axis(lambda x, y: {"x": grad_coord_x[x], "y": grad_coord_y[y], "name": ill},  1,  bad).tolist()
-
+        print(len(bad))
+        #print(np.apply_along_axis(lambda x: print(x[0]),  1,  bad[:10]))
+        json_res += np.apply_along_axis(lambda x: {"x": grad_coord_x[x[0]], "y": grad_coord_y[x[1]], "name": ill},  1,  bad[:100]).tolist()
+        
     with open(name, "w+") as f:
         json.dump(json_res, f)
 
@@ -111,7 +136,7 @@ def get_matrix_ts(date_time):
     mats = []
     for t in range(cur, 0,-10800):
         mats.append(f"{t}")
-        if (len(mats) == 25):
+        if (len(mats) == 26):
             break
     return mats
      
@@ -134,8 +159,9 @@ if __name__ == "__main__":
         paths.append(f"days_log/{t}.npy")
         if (os.path.exists(f"days_log/{t}.npy")):
             continue
-
-        builder.produce(t, data="days_log_raw")
+        try:
+            builder.produce(t, data="days_log_raw")
+        except: pass
     ans = get_probability(paths) 
     save_path = f"zalupa_{predict_time}.json"
     save_to_json(save_path, ans)
