@@ -27,7 +27,7 @@
     {
         "temperature_lb":16,
         "temperature_ub":26,
-        "wetness_lb":95,
+        "wetness_lb":90,
         "wetness_ub":100,
         "period": 2
     }, 

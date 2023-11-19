@@ -6,7 +6,6 @@ import sys
 import os
 import json
 import numpy as np
-import matplotlib.pyplot as plt
 import tqdm
 import datetime
 import WeatherMatrixBuilder
@@ -44,8 +43,8 @@ class IllnessMeter:
         self.lw = lowest_wetness
         self.hw = highest_wetness
         self.period = per * samples_per_day# количество измерений в день
-        self.count = np.zeros((cfg["height"], cfg["width"]), dtype = int)
-
+        self.count_t = np.zeros((cfg["height"], cfg["width"]), dtype = int)
+        self.count_u = np.zeros((cfg["height"], cfg["width"]), dtype = int)
         self.cm = 0
     def step(self, matrix):
         self.cm+=1
@@ -64,16 +63,16 @@ class IllnessMeter:
         m1 = mat1 <= (self.hw + eps_u)
         m1 = np.logical_and(m1, mat1 >= (self.lw-eps_u))
         
-        mask = np.logical_and(m1, m0)
         
         #print(mask[1023][1700: 1710])
-        self.count[mask] += 1
+        self.count_t[m0] += 1
+        self.count_u[m1] += 1
         #print(np.max(self.count))
         #exit(0)
     def get_result(self):
         #print(np.max(self.count), self.period - eps)
         #print(self.cm)
-        return self.count >= (self.period)
+        return np.logical_and(self.count_t >= self.period, self.count_u >= self.period)
 
 def get_meters(illness_info):
     res = []
@@ -114,7 +113,7 @@ def construct_dic(x, y, name):
 
 def delete_half(mat):
     mask = np.full(mat.shape,False, dtype = bool)
-    mask[0:mat.shape[0]:8, 0:mat.shape[1]:10] = True
+    mask[0:mat.shape[0]:10, 0:mat.shape[1]:10] = True
     mat = np.logical_and(mat, mask)
 
     return mat
@@ -163,7 +162,7 @@ def get_matrix_ts(date_time):
     mats = []
     for t in range(cur, 0,-10800):
         mats.append(f"{t}")
-        if (len(mats) == 26):
+        if (len(mats) == 30):
             break
     return mats
      
