@@ -114,7 +114,7 @@ def construct_dic(x, y, name):
 def save_to_json(name, ans):
     
     json_res = []
-    print(grad_coord_x.shape)
+    print(grad_coord_x[0][0])
     for ill, mat in tqdm.tqdm(zip(illnesses.keys(), ans)):
         bad = np.asarray(mat.nonzero()).T
         if (bad.shape[0] == 0):
