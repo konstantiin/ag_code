@@ -45,6 +45,7 @@ class IllnessMeter:
         self.hw = highest_wetness
         self.period = per * samples_per_day# количество измерений в день
         self.count = np.zeros((cfg["height"], cfg["width"]), dtype = int)
+
         self.cm = 0
     def step(self, matrix):
         self.cm+=1
@@ -111,8 +112,14 @@ def construct_dic(x, y, name):
     return {"x": grad_coord_x[x], "y": grad_coord_y[y], "name": name}
 
 
+def delete_half(mat):
+    mask = np.full(mat.shape,False, dtype = bool)
+    mask[0:mat.shape[0]:8, 0:mat.shape[1]:10] = True
+    mat = np.logical_and(mat, mask)
+
+    return mat
 def save_to_json(name, ans):
-    
+
     json_res = {
         "timestamp": timestamp,
         "illness" : [
@@ -132,6 +139,7 @@ def save_to_json(name, ans):
         "data": []
     }
     for ill, mat in zip(range(len(illnesses)), ans):
+        mat = delete_half(mat)
         bad = np.asarray(mat.nonzero()).T
         if (bad.shape[0] == 0):
             continue
@@ -152,7 +160,6 @@ def get_matrix_ts(date_time):
     step = 10800
     parse_date_to_timestamp(date_time)
     cur = timestamp
-    print(cur)
     mats = []
     for t in range(cur, 0,-10800):
         mats.append(f"{t}")
@@ -181,9 +188,7 @@ if __name__ == "__main__":
         paths.append(f"days_log/{t}.npy")
         if (os.path.exists(f"days_log/{t}.npy")):
             continue
-        try:
-            builder.produce(t, data="days_log_raw")
-        except: pass
+        builder.produce(t, data="days_log_raw")
     ans = get_probability(paths) 
     save_path = f"zalupa_{predict_time}.json"
     save_to_json(save_path, ans)
