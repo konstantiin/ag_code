@@ -2,7 +2,6 @@ import json
 import numpy as np
 from scipy.interpolate import LinearNDInterpolator
 import os
-import json
 with open("cfg.json") as f:
     cfg = json.load(f)
 
